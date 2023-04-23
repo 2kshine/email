@@ -1,0 +1,45 @@
+let errors = {
+  message: "",
+  status: 200,
+};
+const ErrorCode = (code) => {
+  if (code === "MISSING_FIELDS") {
+    return "Name, email, and password are required";
+  }
+  if (code === "PASS_ERROR") {
+    return "Password must contain at least one uppercase letter, one lowercase letter, one number, one special character, and be at least 8 characters long";
+  }
+
+  if (code === "PASS_MISMATCH") {
+    return "Password doesn't match";
+  }
+
+  if (code === "INV_EMAIL") {
+    errors.message = "Invalid email format";
+    errors.status = 400;
+  }
+  if (code === "ID_MISMATCH") {
+    return "Cannot find the record with that ID.";
+  }
+  //Roles
+  if (code === "ROLES_DUP_ENTRY") {
+    return "This role has already been added.";
+  }
+  if(code === "EMAIL_DUP_ENTRY"){
+    errors.message = "This email address is already taken.";
+    errors.status = 400;
+  }
+  if (code === "INV_DOMAIN") {
+    errors.message = "Your email id's domain name is invalid.";
+    errors.status = 400;
+  }
+  if (code === "EMAIL_SEND_FAIL") {
+    errors.message = "Failed to send an email";
+    errors.status = 500;
+  }
+
+  if (errors.message != "") {
+    return errors;
+  }
+};
+module.exports = ErrorCode;
