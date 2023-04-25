@@ -4,13 +4,13 @@ const ErrorCodes = require("../validations/errorCodes");
 const SendEmailVerification = require("../services/sendEmailVerification");
 const crypto = require("crypto");
 const bcrypt = require("bcrypt");
-
+const TwoFactorAuth = require("../services/twoFactorAuth");
 const createUser = async (req, res) => {
   const { first_name, last_name, email, password, confirmation_password } =
     req.body;
   try {
     //Validate Email address
-    await Validation({User, email});
+    await Validation({ User, email });
     //Create Token by hashing user_id
     const randomToken = generateToken();
     //Create User
@@ -23,7 +23,7 @@ const createUser = async (req, res) => {
       token: randomToken,
       token_expiry: new Date(Date.now() + 3600000),
     });
-    await SendEmailVerification( user, randomToken );
+    await SendEmailVerification(user, randomToken);
     res.status(201).json({
       status: "sucesss",
       message:
@@ -54,7 +54,7 @@ const verifyToken = async (req, res) => {
     //find the user with id and token.
     const user = await User.findOne({
       where: {
-        token:token
+        token: token,
       },
     });
 
@@ -73,7 +73,7 @@ const verifyToken = async (req, res) => {
     // user.token = null;
     // user.token_expiry = null;
     //Create password and confirm password
-    console.log(password)
+    console.log(password);
     const validatePassword = await Validation({
       password,
       confirmation_password,
@@ -86,10 +86,10 @@ const verifyToken = async (req, res) => {
     await user.update({
       password: encryptPassword,
       confirmation_password: encryptConfirmationPassword,
-      token:null,
-      token_expiry:null
+      token: null,
+      token_expiry: null,
     });
-    
+
     res.status(201).json({
       status: "sucesss",
       message: "Successfully created password and verified user.",
@@ -103,9 +103,33 @@ const verifyToken = async (req, res) => {
     });
   }
 };
+const twoFactor = async (req, res) => {
+  try {
+    //find user by id
+    const user = await User.findByPk(req.params.id);
+
+    //Two factor secret key.
+    const secret_key = await TwoFactorAuth({ user });
+    const {qrCode, secret } = secret_key
+    res.status(201).json({
+      status: "sucesss",
+      message: "Successfully created password and verified user.",
+      data: user,
+      qrCode,
+      secret
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      status: "failed",
+      message: "Internal Server Error.",
+    });
+  }
+};
+
 const generateToken = () => {
   const randomToken = crypto.randomBytes(32).toString("hex");
   return randomToken;
 };
 
-module.exports = { createUser, verifyToken };
+module.exports = { createUser, verifyToken, twoFactor };
