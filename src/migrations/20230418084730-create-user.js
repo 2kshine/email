@@ -11,6 +11,7 @@ module.exports = {
         defaultValue: Sequelize.UUIDV4,
         primaryKey: true,
         type: Sequelize.UUID,
+        unique:true
       },
       first_name: {
         type: Sequelize.STRING,
@@ -27,7 +28,9 @@ module.exports = {
       },
       password: {
         type: Sequelize.STRING,
-        allowNull: false
+      },
+      confirmation_password: {
+        type: Sequelize.STRING,
       },
       active:{
         type:Sequelize.BOOLEAN,
