@@ -39,6 +39,14 @@ const ErrorCode = (code) => {
     errors.message = "Passwords mismatch";
     errors.status = 405;
   }
+  if (code === "USR_NT_FOUND") {
+    errors.message = "User not found";
+    errors.status = 405;
+  }
+  if (code === "TWO_FA_ENA") {
+    errors.message = "Two-factor authentication is already enabled";
+    errors.status = 405;
+  }
   
   if (errors.message != "") {
     return errors;
