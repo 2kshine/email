@@ -34,6 +34,7 @@ module.exports = (sequelize, DataTypes) => {
         unique: true
       } ,
       password: DataTypes.STRING,
+      confirmation_password: DataTypes.STRING,
       active:DataTypes.BOOLEAN,
       verified:DataTypes.BOOLEAN,
       token:DataTypes.STRING,

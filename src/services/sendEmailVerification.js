@@ -1,28 +1,25 @@
 const nodemailer = require("nodemailer");
 require("dotenv").config();
-const SendEmailVerification = async (randomToken, user_id, email) => {
-  const url = `${process.env.BASE_URL}api/v1/users/${user_id}/verify/${randomToken}`;
+const SendEmailVerification = async (user, randomToken) => {
+  const url = `${process.env.UX_URL}/users/verify-email?token=${randomToken}`;
   try {
     const transporter = nodemailer.createTransport({
-      host: process.env.HOST,
-      service: process.env.SERVICE,
-      port: process.env.EMAIL_PORT,
-      secure: process.env.SECURE,
+      host: "sandbox.smtp.mailtrap.io",
+      port: 2525,
       auth: {
-        user: process.env.USER,
-        pass: process.env.PASS,
-      },
+        user: "62123ef61d2232",
+        pass: "66bee75509dd69"
+      }
     });
 
     await transporter.sendMail({
       from: process.env.USER,
-      to: email,
+      to: user.email,
       subject: "Verify Email Address",
       html: '<p>Please click on the following link to verify your email address:</p>'+
       `<a href=${url}>${url}</a>`
       ,
     });
-    return true;
   } catch (err) {
     console.log("failed to send email" + err);
     const error = new Error("Failed sending an email");
