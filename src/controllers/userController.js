@@ -4,7 +4,8 @@ const ErrorCodes = require("../validations/errorCodes");
 const SendEmailVerification = require("../services/sendEmailVerification");
 const crypto = require("crypto");
 const bcrypt = require("bcrypt");
-const TwoFactorAuth = require("../services/twoFactorAuth");
+const GenerateTotpSecret = require("../services/twoFactorAuth/generateTotpSecret");
+const GenerateRecoveryCodes = require("../services/twoFactorAuth/generateRecoveryCode");
 const createUser = async (req, res) => {
   const { first_name, last_name, email, password, confirmation_password } =
     req.body;
@@ -64,7 +65,7 @@ const verifyToken = async (req, res) => {
         message: "Invalid or expired token",
       });
     }
-    user.update({
+    await user.update({
       verified: true,
     });
 
@@ -107,16 +108,24 @@ const twoFactor = async (req, res) => {
   try {
     //find user by id
     const user = await User.findByPk(req.params.id);
-
     //Two factor secret key.
-    const secret_key = await TwoFactorAuth({ user });
-    const {qrCode, secret } = secret_key
+    const secret_key = await GenerateTotpSecret(user);
+    //Recovery codes
+    const recovery_codes = GenerateRecoveryCodes();
+    const { qrCode, secret } = secret_key;
+    //update user with secret
+    console.log(recovery_codes);
+    //To convert string back to array use
+    //JSON.parse(string)
+    await user.update({
+      two_factor_secret: secret,
+      two_factor_created_at: new Date(),
+      two_factor_recovery_code: recovery_codes
+    });
     res.status(201).json({
       status: "sucesss",
-      message: "Successfully created password and verified user.",
-      data: user,
+      message: "Here is the qr code.",
       qrCode,
-      secret
     });
   } catch (err) {
     console.log(err);

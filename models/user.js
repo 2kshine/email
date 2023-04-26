@@ -23,26 +23,33 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: Sequelize.UUIDV4,
         primaryKey: true,
       },
-      first_name:{
-        type:DataTypes.STRING,
+      first_name: {
+        type: DataTypes.STRING,
         allowNull: false,
-      } ,
+      },
       last_name: DataTypes.STRING,
-      email:{
-        type:DataTypes.STRING,
+      email: {
+        type: DataTypes.STRING,
         allowNull: false,
-        unique: true
-      } ,
+        unique: true,
+      },
       password: DataTypes.STRING,
       confirmation_password: DataTypes.STRING,
-      active:DataTypes.BOOLEAN,
-      verified:DataTypes.BOOLEAN,
-      token:DataTypes.STRING,
-      token_expiry: DataTypes.DATE
+      active: DataTypes.BOOLEAN,
+      verified: DataTypes.BOOLEAN,
+      token: DataTypes.STRING,
+      token_expiry: DataTypes.DATE,
+      two_factor_secret: DataTypes.STRING,
+      two_factor_created_at: DataTypes.DATE,
+      two_factor_recovery_code:DataTypes.STRING
     },
     {
       sequelize,
       modelName: "User",
+      tableName: "Users",
+      timestamps: true,
+      createdAt: "created_at", // specify the correct field name for createdAt
+      updatedAt: "updated_at", // specify the correct field name for updatedAt
     }
   );
   return User;
