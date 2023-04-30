@@ -1,6 +1,6 @@
 const nodemailer = require("nodemailer");
 require("dotenv").config();
-const SendEmailVerification = async (user, randomToken) => {
+const SendEmailVerification = async (email, randomToken) => {
   const url = `${process.env.UX_URL}/users/verify-email?token=${randomToken}`;
   try {
     const transporter = nodemailer.createTransport({
@@ -14,7 +14,7 @@ const SendEmailVerification = async (user, randomToken) => {
 
     await transporter.sendMail({
       from: process.env.USER,
-      to: user.email,
+      to: email,
       subject: "Verify Email Address",
       html: '<p>Please click on the following link to verify your email address:</p>'+
       `<a href=${url}>${url}</a>`

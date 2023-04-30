@@ -1,6 +1,7 @@
 "use strict";
 
-const {v4: uuidv4 } = require('uuid');
+const { DataTypes } = require("sequelize");
+const { v4: uuidv4 } = require("uuid");
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
@@ -11,7 +12,7 @@ module.exports = {
         defaultValue: Sequelize.UUIDV4,
         primaryKey: true,
         type: Sequelize.UUID,
-        unique:true
+        unique: true,
       },
       first_name: {
         type: Sequelize.STRING,
@@ -24,7 +25,7 @@ module.exports = {
       email: {
         type: Sequelize.STRING,
         allowNull: false,
-        unique:true,
+        unique: true,
       },
       password: {
         type: Sequelize.STRING,
@@ -32,34 +33,49 @@ module.exports = {
       confirmation_password: {
         type: Sequelize.STRING,
       },
-      active:{
-        type:Sequelize.BOOLEAN,
-        defaultValue:false,
-        allowNull:false
-      },
-      verified:{
-        type:Sequelize.BOOLEAN,
-        defaultValue:false,
-        allowNull:false
-      },
-      token:{
-        type:Sequelize.STRING,
-      },
-      token_expiry: {
-        type:Sequelize.DATE,
-      },
-      createdAt: {
-        type: Sequelize.DATE,
-        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+      active: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
         allowNull: false,
       },
-      updatedAt: {
+      verified: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
+        allowNull: false,
+      },
+      token: {
+        type: Sequelize.STRING,
+      },
+      token_expiry: {
         type: Sequelize.DATE,
-        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'),
+      },
+      two_factor_secret: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
+      two_factor_created_at: {
+        type: Sequelize.DATE,
+        allowNull: true,
+      },
+      //Storing array as a string in JSON format.
+      two_factor_recovery_code: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        defaultValue: "[]",
+      },
+      created_at: {
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+        allowNull: false,
+      },
+      updated_at: {
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal(
+          "CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
+        ),
         allowNull: false,
       },
     });
-    
   },
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable("Users");

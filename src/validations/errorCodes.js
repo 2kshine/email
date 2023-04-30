@@ -39,7 +39,34 @@ const ErrorCode = (code) => {
     errors.message = "Passwords mismatch";
     errors.status = 405;
   }
-  
+  if (code === "USR_NT_FOUND") {
+    errors.message = "User not found";
+    errors.status = 405;
+  }
+  if (code === "TWO_FA_ENA") {
+    errors.message = "Two-factor authentication is already enabled";
+    errors.status = 405;
+  }
+  if (code === "INV_LOGIN_EMAIL") {
+    errors.message = "Invalid email used for login.";
+    errors.status = 405;
+  }
+  if (code === "INV_LOGIN_PASSWORD") {
+    errors.message = "Invalid password used for login.";
+    errors.status = 405;
+  }
+  if (code === "CODE_MISMATCH") {
+    errors.message = "code is not valid.";
+    errors.status = 405;
+  }
+  if (code === "ENB_TWOFA") {
+    errors.message = "Enable two factor auth.";
+    errors.status = 405;
+  }
+  if (code === "CODE_EMPTY") {
+    errors.message = "code is not valid.";
+    errors.status = 405;
+  }
   if (errors.message != "") {
     return errors;
   }
