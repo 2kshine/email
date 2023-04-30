@@ -4,7 +4,7 @@ const domain = [
   "athlead",
   "performancetravel",
   "operation",
-  "gmail",
+
 ];
 const zxcvn = require("zxcvbn");
 
@@ -60,7 +60,6 @@ const checkFormat = (userEmail) => {
 };
 const checkDomain = (userEmail) => {
   //Split email into 2 parts. (1st@2nd)
-  console.log(userEmail);
   let parts = userEmail.split("@");
   //Split 2nd part into two parts. (1st.2nd)
   let userDomain = parts[1].split(".");
