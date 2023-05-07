@@ -1,24 +1,24 @@
-import logo from './logo.svg';
-import './App.css';
-
+import RootLayout from "./layout/RouteLayout";
+import SignupPage from "./pages/SignupPage";
+import { ThemeProvider, Box } from "@mui/material";
 function App() {
+  const theme = RootLayout;
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+    <ThemeProvider theme={theme}>
+      <div className="App">
+        <Box
+          sx={{
+            height: "100vh",
+            display: "flex",
+            flexDirection: "column",
+            textAlign:"center",
+            backgroundColor: "#f2f2f2",
+          }}
         >
-          Learn React
-        </a>
-      </header>
-    </div>
+          <SignupPage/>
+        </Box>
+      </div>
+    </ThemeProvider>
   );
 }
 
