@@ -1,6 +1,6 @@
 import RootLayout from "./layout/RouteLayout";
-import SignupPage from "./pages/SignupPage";
 import { ThemeProvider, Box } from "@mui/material";
+import LoginPage from "./pages/LoginPage";
 function App() {
   const theme = RootLayout;
   return (
@@ -12,10 +12,10 @@ function App() {
             display: "flex",
             flexDirection: "column",
             textAlign:"center",
-            backgroundColor: "#f2f2f2",
+            backgroundColor: "#d2d2d2",
           }}
         >
-          <SignupPage/>
+          <LoginPage/>
         </Box>
       </div>
     </ThemeProvider>
