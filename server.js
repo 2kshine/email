@@ -5,7 +5,11 @@ const userRoutes = require("./routers/userRoutes");
 const SessionMiddleware = require("./src/middlewares/sessionMiddleware");
 const passport = require("./src/middlewares/passportMiddleware");
 const redis = require("redis");
+const cors = require("cors");
+const cookieParser = require("cookie-parser");
 const RedisStore = require("connect-redis").default;
+const secretKey = 'mysecretkey';
+
 require("dotenv").config();
 
 // Initialize express app
@@ -30,6 +34,12 @@ let redisStore = new RedisStore({
   ttl:5
 });
 
+//setup cors
+app.use(cors({
+  origin: 'http://localhost:3000', // replace with your client-side app URL
+  credentials: true,
+}));
+app.use(cookieParser(secretKey))
 //setup session middleware and passport middleware.
 app.use(SessionMiddleware(redisStore));
 app.use(passport.initialize());

@@ -67,6 +67,10 @@ const ErrorCode = (code) => {
     errors.message = "code is not valid.";
     errors.status = 405;
   }
+  if (code === "DENY_ACCESS") {
+    errors.message = "Access denied.";
+    errors.status = 401;
+  }
   if (errors.message != "") {
     return errors;
   }

@@ -1,0 +1,10 @@
+create user and store user tokens in local storage using context api
+while storing in local storage encrypt the tokens and store iv context api
+when asking for the token from local storage decrypt it using the iv gained from context api.
+after decryption check it and verify the address. set token to null for conditional rendering.
+
+do not store user id signed cookies just store user-agent which shall be encrypted as well and from the client side store verification token encrypted.
+
+for twofa access after verification of user password, create a jwt and force browsser to use it for accessing protected routes.
+
+If you are storing in localStorage why do you need context api?

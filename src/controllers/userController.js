@@ -5,11 +5,10 @@ const SendEmailVerification = require("../services/sendEmailVerification");
 const crypto = require("crypto");
 const bcrypt = require("bcrypt");
 const GenerateTotpSecret = require("../services/twoFactorAuth/generateTotpSecret");
-const VerifyTotpSecret = require("../services/twoFactorAuth/verifyTotpSecret")
+const VerifyTotpSecret = require("../services/twoFactorAuth/verifyTotpSecret");
 const passport = require("passport");
 const createUser = async (req, res) => {
-  const { first_name, last_name, email} =
-    req.body;
+  const { first_name, last_name, email } = req.body;
   try {
     //Validate Email address
     await Validation({ User, email });
@@ -26,7 +25,6 @@ const createUser = async (req, res) => {
       token: randomToken,
       token_expiry: new Date(Date.now() + 3600000),
     });
-
     res.status(201).json({
       status: "sucesss",
       message:
@@ -82,8 +80,21 @@ const verifyToken = async (req, res) => {
       password: encryptPassword,
       confirmation_password: encryptConfirmationPassword,
     });
-    // setup session for user.
-    req.session.user_id = user.id;
+    // // setup session for user.
+    // req.session.user_id = user.id;
+    //setup signed cookies.
+    const user_agent = req.headers['user-agent']
+    const user_id = user.id
+    res.cookie("user_agent", user_agent, {
+      httpOnly: true,
+      maxAge: 600000,
+      signed: true,
+    });
+    res.cookie("user_id", user_id, {
+      httpOnly: false,
+      maxAge: 600000,
+      signed: true,
+    });
     if (user) {
       res.status(201).json({
         status: "success",
@@ -100,16 +111,24 @@ const verifyToken = async (req, res) => {
 };
 const twoFactorEnable = async (req, res) => {
   try {
+    const readCookies = req.signedCookies['user_agent']
+    if(!readCookies){
+      const error = new Error("Access denied");
+      error.code = "DENY_ACCESS";
+      throw error;
+    }
+    console.log(readCookies)
     //find user by id from session.
-    const user = await User.findByPk(req.session.user_id);
+    const user_id = req.signedCookies['user_id']
+    const user = await User.findOne({where: { id: user_id}})
     //Two factor secret key.
     const secret_key = await GenerateTotpSecret(user);
-    
+
     const { qrCode, secret } = secret_key;
     //update user with secret
     await user.update({
       two_factor_secret: secret,
-      two_factor_created_at: new Date()
+      two_factor_created_at: new Date(),
     });
     res.status(201).json({
       status: "sucesss",
@@ -126,39 +145,42 @@ const twoFactorEnable = async (req, res) => {
 };
 
 const twoFactorVerify = async (req, res) => {
-  try{
+  try {
     //Destructure the req body.
-    const { code } = req.body
+    const { code } = req.body;
     //check if two factor is enabled.
     const user = await User.findByPk(req.session.user_id);
-    if(!user){
+    if (!user) {
       const error = new Error("Cannot find user.");
       error.code = "USR_NT_FOUND";
       throw error;
     }
-    console.log(user.two_factor_secret)
-    if(user.two_factor_secret === null){
+    console.log(user.two_factor_secret);
+    if (user.two_factor_secret === null) {
       const error = new Error("Enable two fa auth.");
       error.code = "ENB_TWOFA";
       throw error;
     }
-    if(code === ""){
+    if (code === "") {
       const error = new Error("Code cannot be empty");
       error.code = "CODE_EMPTY";
       throw error;
     }
-    const verifyCode = await VerifyTotpSecret(code, user.two_factor_secret, user);
-    if(!verifyCode){
+    const verifyCode = await VerifyTotpSecret(
+      code,
+      user.two_factor_secret,
+      user
+    );
+    if (!verifyCode) {
       const error = new Error("Cannot find user.");
       error.code = "USR_NT_FOUND";
       throw error;
-      
     }
     res.status(201).json({
       status: "success",
       message: "Two factor verified successfully.",
     });
-  }catch(err){
+  } catch (err) {
     console.log("Error: " + err);
     const errorCodes = ErrorCodes(err.code);
     if (errorCodes) {
